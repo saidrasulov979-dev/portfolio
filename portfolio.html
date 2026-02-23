@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Portfolio</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+:root {
+  --bg: #000;
+  --surface: #0a0a0a;
+  --border: #1c1c1c;
+  --text: #e0e0e0;
+  --muted: #3a3a3a;
+  --muted2: #555;
+  --green: #3dff6e;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  min-height: 100vh;
+  padding-bottom: 60px;
+  overflow-x: hidden;
+}
+
+/* ─── SCROLL ANIMATIONS ─── */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.reveal.in {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* stagger children */
+.reveal-group .reveal-item {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+.reveal-group.in .reveal-item:nth-child(1) { opacity:1; transform:translateY(0); transition-delay: 0.05s; }
+.reveal-group.in .reveal-item:nth-child(2) { opacity:1; transform:translateY(0); transition-delay: 0.12s; }
+.reveal-group.in .reveal-item:nth-child(3) { opacity:1; transform:translateY(0); transition-delay: 0.19s; }
+.reveal-group.in .reveal-item:nth-child(4) { opacity:1; transform:translateY(0); transition-delay: 0.26s; }
+.reveal-group.in .reveal-item:nth-child(5) { opacity:1; transform:translateY(0); transition-delay: 0.33s; }
+.reveal-group.in .reveal-item:nth-child(6) { opacity:1; transform:translateY(0); transition-delay: 0.40s; }
+.reveal-group.in .reveal-item:nth-child(7) { opacity:1; transform:translateY(0); transition-delay: 0.47s; }
+.reveal-group.in .reveal-item:nth-child(8) { opacity:1; transform:translateY(0); transition-delay: 0.54s; }
+.reveal-group.in .reveal-item:nth-child(9) { opacity:1; transform:translateY(0); transition-delay: 0.61s; }
+
+/* ─── HEADER ─── */
+.header {
+  padding: 44px 22px 36px;
+  border-bottom: 1px solid var(--border);
+}
+.prompt {
+  font-size: 10px;
+  color: var(--muted2);
+  letter-spacing: 1px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.prompt::before { content: '>'; color: var(--green); }
+
+.name {
+  font-size: 40px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -1.5px;
+  line-height: 1.02;
+  margin-bottom: 8px;
+}
+.role {
+  font-size: 10px;
+  color: var(--muted2);
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  margin-bottom: 22px;
+}
+.bio {
+  font-size: 12px;
+  line-height: 1.85;
+  color: #555;
+  font-weight: 300;
+  border-left: 1px solid var(--border);
+  padding-left: 14px;
+  margin-bottom: 26px;
+}
+
+.stats-row {
+  display: flex;
+  border: 1px solid var(--border);
+  margin-bottom: 18px;
+}
+.stat { flex: 1; padding: 14px 8px; text-align: center; border-right: 1px solid var(--border); }
+.stat:last-child { border-right: none; }
+.stat-n { display: block; font-size: 22px; font-weight: 700; color: #fff; line-height: 1; margin-bottom: 5px; }
+.stat-l { font-size: 9px; color: var(--muted2); letter-spacing: 1px; text-transform: uppercase; }
+
+.tg-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px;
+  background: #fff;
+  color: #000;
+  border: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.tg-btn:active { background: #ccc; }
+
+/* ─── SECTION LABEL ─── */
+.sec-label {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 36px 22px 18px;
+}
+.sec-num { font-size: 10px; color: var(--muted); letter-spacing: 1px; }
+.sec-title { font-size: 11px; font-weight: 700; color: var(--green); letter-spacing: 3px; text-transform: uppercase; }
+.sec-line { flex: 1; height: 1px; background: var(--border); }
+
+/* ─── SKILLS ─── */
+.skills-wrap { padding: 0 22px; }
+.skill-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--border);
+}
+.skill-row:last-child { border-bottom: none; }
+.skill-name { width: 112px; flex-shrink: 0; font-size: 12px; color: #bbb; }
+.bar-bg { flex: 1; height: 1px; background: var(--border); position: relative; }
+.bar-fg {
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+  background: #fff;
+  width: 0%;
+  transition: width 0.9s cubic-bezier(.4,0,.2,1);
+}
+.skill-pct { width: 34px; text-align: right; font-size: 10px; color: var(--muted2); flex-shrink: 0; }
+
+/* ─── PROJECTS ─── */
+.projects-wrap { padding: 0 22px; }
+.proj {
+  border: 1px solid var(--border);
+  padding: 18px;
+  margin-bottom: 8px;
+  transition: border-color 0.2s;
+}
+.proj:last-child { margin-bottom: 0; }
+.proj:active { border-color: #444; }
+.proj-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 9px; }
+.proj-name { font-size: 13px; font-weight: 700; color: #fff; }
+.proj-badge {
+  font-size: 9px;
+  padding: 3px 7px;
+  border: 1px solid var(--border);
+  color: var(--muted2);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.proj-badge.live { border-color: var(--green); color: var(--green); }
+.proj-desc { font-size: 11px; line-height: 1.75; color: #555; margin-bottom: 12px; font-weight: 300; }
+.tech-list { display: flex; flex-wrap: wrap; gap: 5px; }
+.tech { font-size: 9px; padding: 3px 7px; background: var(--surface); color: var(--muted2); }
+
+/* ─── EXPERIENCE ─── */
+.exp-wrap { padding: 0 22px; }
+.exp-item {
+  display: grid;
+  grid-template-columns: 78px 1fr;
+  gap: 14px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--border);
+}
+.exp-item:last-child { border-bottom: none; }
+.exp-date { font-size: 10px; color: var(--muted2); line-height: 1.7; }
+.exp-company { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 3px; }
+.exp-role { font-size: 10px; color: var(--muted2); margin-bottom: 7px; letter-spacing: 0.5px; }
+.exp-desc { font-size: 11px; color: #555; line-height: 1.75; font-weight: 300; }
+
+/* ─── ABOUT ─── */
+.about-wrap { padding: 0 22px; }
+.about-block {
+  border: 1px solid var(--border);
+  padding: 16px;
+  margin-bottom: 8px;
+}
+.about-block:last-child { margin-bottom: 0; }
+.about-title { font-size: 12px; font-weight: 700; color: #fff; margin-bottom: 7px; }
+.about-text { font-size: 11px; color: #555; line-height: 1.75; font-weight: 300; }
+
+/* ─── CONTACT ─── */
+.contact-wrap { padding: 0 22px; }
+.avail-note {
+  border: 1px solid var(--border);
+  padding: 14px;
+  margin-bottom: 16px;
+  font-size: 11px;
+  color: #555;
+  line-height: 1.8;
+}
+.avail-dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+  margin-right: 8px;
+  animation: blink 2s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1}50%{opacity:0.15} }
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--border);
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+.contact-item:last-child { border-bottom: none; }
+.contact-item:active { opacity: 0.4; }
+.c-key { font-size: 9px; color: var(--muted2); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 3px; }
+.c-val { font-size: 12px; color: #fff; }
+.c-arr { color: var(--muted2); font-size: 16px; }
+
+/* ─── CURSOR LINE (blink) ─── */
+.cursor::after {
+  content: '_';
+  animation: blink 1s infinite;
+  color: var(--green);
+}
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<div class="header">
+  <div class="prompt reveal">portfolio.uz ~ whoami</div>
+  <div class="name reveal" style="transition-delay:0.08s">Said<br>Rasulov<span class="cursor"></span></div>
+  <div class="role reveal" style="transition-delay:0.14s">Full-Stack · Bot Developer</div>
+  <div class="bio reveal" style="transition-delay:0.2s">
+    Python, Node.js va TypeScript bilan ishlayman. Telegram botlar, web ilovalar va API'lar — bu mening soham. Har bir proyektga maksimal e'tibor bilan yondashaman.
+  </div>
+  <div class="stats-row reveal" style="transition-delay:0.26s">
+    <div class="stat"><span class="stat-n">1+</span><span class="stat-l">Yil</span></div>
+    <div class="stat"><span class="stat-n">10+</span><span class="stat-l">Loyiha</span></div>
+    <div class="stat"><span class="stat-n">5+</span><span class="stat-l">Mijoz</span></div>
+  </div>
+  <a href="https://t.me/username" class="tg-btn reveal" style="transition-delay:0.32s" target="_blank">✈ TELEGRAM ORQALI YOZISH</a>
+</div>
+
+<!-- ══ 01 SKILLS ══ -->
+<div class="sec-label reveal">
+  <span class="sec-num">01</span>
+  <span class="sec-title">Skills</span>
+  <span class="sec-line"></span>
+</div>
+<div class="skills-wrap reveal-group">
+  <div class="skill-row reveal-item">
+    <span class="skill-name">TG Bot API</span>
+    <div class="bar-bg"><div class="bar-fg" data-w="95"></div></div>
+    <span class="skill-pct">95%</span>
+  </div>
+  <div class="skill-row reveal-item">
+    <span class="skill-name">Python</span>
+    <div class="bar-bg"><div class="bar-fg" data-w="90"></div></div>
+    <span class="skill-pct">90%</span>
+  </div>
+  <div class="skill-row reveal-item">
+    <span class="skill-name">FastAPI</span>
+    <div class="bar-bg"><div class="bar-fg" data-w="88"></div></div>
+    <span class="skill-pct">88%</span>
+  </div>
+  <div class="skill-row reveal-item">
+    <span class="skill-name">PostgreSQL</span>
+    <div class="bar-bg"><div class="bar-fg" data-w="85"></div></div>
+    <span class="skill-pct">85%</span>
+  </div>
+  <div class="skill-row reveal-item">
+    <span class="skill-name">Node.js</span>
+    <div class="bar-bg"><div class="bar-fg" data-w="80"></div></div>
+    <span class="skill-pct">80%</span>
+  </div>
+  <div class="skill-row reveal-item">
+    <span class="skill-name">React</span>
+    <div class="bar-bg"><div class="bar-fg" data-w="75"></div></div>
+    <span class="skill-pct">75%</span>
+  </div>
+  <div class="skill-row reveal-item">
+    <span class="skill-name">TypeScript</span>
+    <div class="bar-bg"><div class="bar-fg" data-w="70"></div></div>
+    <span class="skill-pct">70%</span>
+  </div>
+  <div class="skill-row reveal-item">
+    <span class="skill-name">Docker</span>
+    <div class="bar-bg"><div class="bar-fg" data-w="70"></div></div>
+    <span class="skill-pct">70%</span>
+  </div>
+  <div class="skill-row reveal-item">
+    <span class="skill-name">Redis</span>
+    <div class="bar-bg"><div class="bar-fg" data-w="72"></div></div>
+    <span class="skill-pct">72%</span>
+  </div>
+</div>
+
+<!-- ══ 02 PROJECTS ══ -->
+<div class="sec-label reveal">
+  <span class="sec-num">02</span>
+  <span class="sec-title">Loyihalar</span>
+  <span class="sec-line"></span>
+</div>
+<div class="projects-wrap reveal-group">
+  <div class="proj reveal-item">
+    <div class="proj-top">
+      <div class="proj-name">Ombor Bot</div>
+      <div class="proj-badge live">Live</div>
+    </div>
+    <div class="proj-desc">Mahsulot hisobi, buyurtma va yetkazib berish jarayonlarini boshqaruvchi Telegram bot tizimi.</div>
+    <div class="tech-list">
+      <span class="tech">Python</span><span class="tech">Aiogram 3</span><span class="tech">PostgreSQL</span><span class="tech">Redis</span>
+    </div>
+  </div>
+  <div class="proj reveal-item">
+    <div class="proj-top">
+      <div class="proj-name">Shop WebApp</div>
+      <div class="proj-badge live">Live</div>
+    </div>
+    <div class="proj-desc">Telegram Mini App sifatida ishlaydigan to'liq online do'kon. To'lov tizimi va admin panel.</div>
+    <div class="tech-list">
+      <span class="tech">React</span><span class="tech">FastAPI</span><span class="tech">TG WebApp</span><span class="tech">Stripe</span>
+    </div>
+  </div>
+  <div class="proj reveal-item">
+    <div class="proj-top">
+      <div class="proj-name">CRM Dashboard</div>
+      <div class="proj-badge">SaaS</div>
+    </div>
+    <div class="proj-desc">Mijozlarni boshqarish va real-time statistika uchun web dashboard.</div>
+    <div class="tech-list">
+      <span class="tech">Vue.js</span><span class="tech">Django</span><span class="tech">WebSocket</span>
+    </div>
+  </div>
+  <div class="proj reveal-item">
+    <div class="proj-top">
+      <div class="proj-name">Edu Bot</div>
+      <div class="proj-badge live">Live</div>
+    </div>
+    <div class="proj-desc">Test, dars va sertifikat beruvchi ta'lim Telegram boti. 5000+ foydalanuvchi.</div>
+    <div class="tech-list">
+      <span class="tech">Python</span><span class="tech">Aiogram</span><span class="tech">SQLite</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 03 EXPERIENCE ══ -->
+<div class="sec-label reveal">
+  <span class="sec-num">03</span>
+  <span class="sec-title">Tajriba</span>
+  <span class="sec-line"></span>
+</div>
+<div class="exp-wrap reveal-group">
+  <div class="exp-item reveal-item">
+    <div class="exp-date">2023 —<br>Hozir</div>
+    <div>
+      <div class="exp-company">TechHub Uz</div>
+      <div class="exp-role">Senior Backend Developer</div>
+      <div class="exp-desc">Katta hajmdagi API'lar va Telegram bot tizimlari. Microservice arxitektura bilan ishlash.</div>
+    </div>
+  </div>
+  <div class="exp-item reveal-item">
+    <div class="exp-date">2022 —<br>2023</div>
+    <div>
+      <div class="exp-company">Freelance</div>
+      <div class="exp-role">Full-Stack Developer</div>
+      <div class="exp-desc">20+ xorijiy va mahalliy mijozlar uchun loyihalar. Botlar, web ilovalar, API integratsiyalar.</div>
+    </div>
+  </div>
+  <div class="exp-item reveal-item">
+    <div class="exp-date">2021 —<br>2022</div>
+    <div>
+      <div class="exp-company">IT Park Uz</div>
+      <div class="exp-role">Junior Python Developer</div>
+      <div class="exp-desc">Django va FastAPI bilan REST API yaratish. Ma'lumotlar bazasi optimizatsiyasi.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 04 ABOUT ══ -->
+<div class="sec-label reveal">
+  <span class="sec-num">04</span>
+  <span class="sec-title">Men Haqimda</span>
+  <span class="sec-line"></span>
+</div>
+<div class="about-wrap reveal-group">
+  <div class="about-block reveal-item">
+    <div class="about-title">🎓 Ta'lim</div>
+    <div class="about-text">TATU — Axborot texnologiyalari. 2018–2022. Dasturiy ta'minot muhandisligi yo'nalishi.</div>
+  </div>
+  <div class="about-block reveal-item">
+    <div class="about-title">🌍 Tillar</div>
+    <div class="about-text">O'zbek (ona tili) · Rus (B2) · Ingliz (B1)</div>
+  </div>
+  <div class="about-block reveal-item">
+    <div class="about-title">🏆 Yutuqlar</div>
+    <div class="about-text">IT Park hackathon 2023 — 2-o'rin. Telegram Bot Challenge 2022 — g'olib.</div>
+  </div>
+  <div class="about-block reveal-item">
+    <div class="about-title">💡 Qiziqishlar</div>
+    <div class="about-text">Open source, bot automation, fintech, AI integratsiyalari va minimal dizayn.</div>
+  </div>
+</div>
+
+<!-- ══ 05 CONTACT ══ -->
+<div class="sec-label reveal">
+  <span class="sec-num">05</span>
+  <span class="sec-title">Aloqa</span>
+  <span class="sec-line"></span>
+</div>
+<div class="contact-wrap reveal-group">
+  <div class="avail-note reveal-item">
+    <span class="avail-dot"></span>Hozirda yangi loyihalarga tayyor. Freelance buyurtmalar qabul qilaman.
+  </div>
+  <a href="https://t.me/username" class="contact-item reveal-item" target="_blank">
+    <div><div class="c-key">Telegram</div><div class="c-val">@rasulovvv14</div></div>
+    <span class="c-arr">›</span>
+  </a>
+  <a href="https://github.com/username" class="contact-item reveal-item" target="_blank">
+    <div><div class="c-key">GitHub</div><div class="c-val">github.com/saidrasulov979-dev</div></div>
+    <span class="c-arr">›</span>
+  </a>
+  <a href="mailto:email@example.com" class="contact-item reveal-item">
+    <div><div class="c-key">Email</div><div class="c-val">saidrasulov979@gmail.com</div></div>
+    <span class="c-arr">›</span>
+  </a>
+  <a href="https://linkedin.com/in/username" class="contact-item reveal-item" target="_blank">
+    <div><div class="c-key">LinkedIn</div><div class="c-val">linkedin.com/in/username</div></div>
+    <span class="c-arr">›</span>
+  </a>
+</div>
+
+<script>
+  const tg = window.Telegram?.WebApp;
+  if (tg) { tg.ready(); tg.expand(); }
+
+  // ─── IntersectionObserver: reveal on scroll ───
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+
+      const el = entry.target;
+      el.classList.add('in');
+
+      // Animate skill bars when skills section enters view
+      if (el.classList.contains('reveal-group')) {
+        const bars = el.querySelectorAll('.bar-fg');
+        if (bars.length) {
+          setTimeout(() => {
+            bars.forEach(bar => { bar.style.width = bar.dataset.w + '%'; });
+          }, 200);
+        }
+      }
+
+      observer.unobserve(el);
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  // Observe all reveal elements
+  document.querySelectorAll('.reveal, .reveal-group').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
